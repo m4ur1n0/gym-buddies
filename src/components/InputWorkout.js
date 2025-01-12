@@ -9,7 +9,7 @@ const InputWorkout = () => {
     const [endTime, setEndTime] = useState(null);
 
 
-    const [exerciseInput, setExerciseInput] = useState([]);
+    const [exerciseInput, setExerciseInput] = useState({name : '', reps : ''});
     const [exercises, setExercises] = useState([]);
 
     // exercises === [{"exercise" : 4}, {"exercise" : 10}, ... ]
@@ -18,11 +18,15 @@ const InputWorkout = () => {
     const handleCommitExercise = () => {
         // push excercise stored in ererciseInput into exercises (rendering it)
         // clear exercise inpuyt
+
+        setExercises([...exercises, exerciseInput]);
+
+        setExerciseInput({name : '', reps : ''});
     }
 
     const handleExerciseChange = (event) => {
         setExerciseInput({
-            ...exercises,
+            ...exerciseInput,
             name : event.target.value
         })
 
@@ -33,7 +37,7 @@ const InputWorkout = () => {
 
     const handleRepsChange = (event) => {
         setExerciseInput({
-            ...exercises,
+            ...exerciseInput,
             reps : event.target.value
         })
 
@@ -63,7 +67,7 @@ const InputWorkout = () => {
                     {
                         exercises.map((exercise, idx) => (
                             <div key={idx} className='exercise-in-input-list'>
-                                {Object.entries(exercise)}
+                                <p className='text-app_white'>{exercise['name']}   :   {exercise['reps']} </p>
                             </div>
                         ))
                     }
@@ -79,6 +83,7 @@ const InputWorkout = () => {
                             type='text' 
                             placeholder='...' 
                             onChange={handleExerciseChange}
+                            value={exerciseInput['name']}
                         />
                     </div>
 
@@ -90,11 +95,14 @@ const InputWorkout = () => {
                             className='w-[20%]' 
                             placeholder='0' 
                             onChange={handleRepsChange}
+                            value={exerciseInput['reps']}
                         />
                     </div>
 
 
-                    <div className='commit-workout rounded-full bg-app_teal flex flex-col justify-center items-center w-[40px] h-[40px]'>
+                    <div className='commit-workout rounded-full bg-app_teal flex flex-col justify-center items-center w-[40px] h-[40px] cursor-pointer'
+                        onClick={handleCommitExercise}
+                    >
                         <FontAwesomeIcon className=' text-app_white ' icon={faPlus} />
                     </div>
                 </div>
