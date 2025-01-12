@@ -18,8 +18,11 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 
+
   
 }
+
+
 
 h1 {
   @apply text-5xl font-bold;
