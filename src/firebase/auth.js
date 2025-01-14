@@ -14,6 +14,8 @@ export const signUp = async (email, password, userData) => {
         email: email,
         bio: "",
         friends: [],
+        notifications: ["let's work out!"],
+        avatarLevel: 1,
         status: true,
         streak: 0,
         workouts: [],

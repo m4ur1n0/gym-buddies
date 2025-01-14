@@ -1,6 +1,14 @@
 // src/firebase/firestore.js
 import { db } from "./firebase";
-import { collection, addDoc, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+
+
+/**
+ * Add a friend to the user's friends list.
+ * @param {string} currentUid - The UID of the current user.
+ * @param {string} friendUid - The UID of the friend to add.
+ * @returns {string} - A success message or an error message.
+ */
 
 //adddoc
 export const addDocument = async (colName, data) => {
@@ -52,5 +60,69 @@ export const fetchDoc = async (collectionName, docId) => {
       }
   } catch (err) {
     console.error("could not fetch doc:", err);
+  }
+};
+
+export const fetchFriends = async (userId) => {
+  try {
+    const userDoc = await getDoc(doc(db, "users", userId));
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const friends = userData.friends || [];
+
+      const friendsData = await Promise.all(
+        friends.map(async (friendUid) => {
+          const friendDoc = await getDoc(doc(db, "users", friendUid));
+          if (friendDoc.exists()) {
+            return { uid: friendUid, ...friendDoc.data() };
+          } else {
+            console.warn(`Friend with UID ${friendUid} not found`);
+            return null;
+          }
+        })
+      );
+
+      return friendsData.filter(Boolean);
+    }
+
+    return [];
+  } catch (err) {
+    console.error("Could not fetch friends:", err.message);
+    return [];
+  }
+};
+
+export const sendNotification = async (friendUid, message) => {
+  try {
+    await updateDoc(doc(db, "users", friendUid), {
+      notifications: arrayUnion(message),
+    });
+    console.log("Notification sent to:", friendUid);
+  } catch (err) {
+    console.error("Could not send notification:", err);
+  }
+};
+
+export const addFriend = async (currentUid, friendUid) => {
+  try {
+    const friendDocRef = doc(db, "users", friendUid);
+    const friendDoc = await getDoc(friendDocRef);
+
+    if (!friendDoc.exists()) {
+      throw new Error("Friend not found!");
+    }
+
+    const friendData = friendDoc.data();
+
+    const currentUserRef = doc(db, "users", currentUid);
+    await updateDoc(currentUserRef, {
+      friends: arrayUnion(friendUid),
+    });
+
+    return `Friend ${friendData.name} added successfully!`;
+  } catch (err) {
+    console.error("Could not add friend:", err.message);
+    throw err;
   }
 };

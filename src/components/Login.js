@@ -27,7 +27,7 @@ const Login = ({ onLogin }) => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">{isSignUp ? "Sign Up" : "Log In"}</h1>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        {isSignUp && ( // Show name input only for Sign-Up mode
+        {isSignUp && (
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
             <input
